@@ -445,16 +445,7 @@ export async function onRequest(context) {
 
   // 首页整体放大到 125%（通过 headInjections 注入，绕过 ASSETS 模板缓存，
   // 即便 public/index.html 的版本未及时刷新，SSR 输出也始终携带 zoom CSS）
-  headInjections += `<style>
-    @media (min-width: 769px) {
-      html { zoom: 1.25; }
-      body { overflow-x: hidden; }
-      @supports not (zoom: 1.25) {
-        html { transform: scale(1.25); transform-origin: top left; width: 80%; }
-        body { overflow-x: hidden; }
-      }
-    }
-  </style>`;
+  headInjections += '<style>@media (min-width: 769px){html{zoom:1.25}body{overflow-x:hidden}@supports not (zoom: 1.25){html{transform:scale(1.25);transform-origin:top left;width:80%}body{overflow-x:hidden}}}</style>';
 
   // 自定义字体
   const usedFonts = new Set();

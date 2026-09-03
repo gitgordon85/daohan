@@ -1,7 +1,14 @@
 # Static Assets - Cache for 1 year (Immutable)
 # Because we use query params for versioning (?v=hash), it is safe to cache aggressively.
+# /css/style.css 例外：home 样式持续迭代（含 zoom 等），改为短缓存以确保更新即时生效
 /css/*
   Cache-Control: public, max-age=31536000, immutable
+
+!/css/style.css
+  Cache-Control: public, max-age=300, must-revalidate
+
+/css/style.css
+  Cache-Control: public, max-age=300, must-revalidate
 
 /js/*
   Cache-Control: public, max-age=31536000, immutable

@@ -526,6 +526,8 @@ export async function onRequest(context) {
   }).replace(/</g, '\\u003c');
 
   // --- 一次性替换 </head> ---
+  // [DEBUG-BUILD-TAG-v44fcc8d] 仅用于诊断是否运行到最新 worker bundle
+  headInjections += '<meta name="x-build-tag" content="44fcc8d-zp">';
   html = html.replace('</head>', headInjections + '</head>');
 
   // 替换 body 标签 + 滚动容器

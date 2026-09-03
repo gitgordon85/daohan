@@ -443,9 +443,10 @@ export async function onRequest(context) {
   const mobileFrostedBlur = normalizeCssPixelValue(S.mobile_layout_frosted_glass_intensity, frostedBlur);
   headInjections += `<style>:root { --card-padding: 1.25rem; --card-radius: ${cardRadius}px; --frosted-glass-blur: ${frostedBlur}px; }@media (max-width: 767px) { :root { --card-radius: ${mobileCardRadius}px; --frosted-glass-blur: ${mobileFrostedBlur}px; } }</style>`;
 
-  // 首页整体放大到 125%（通过 headInjections 注入，绕过 ASSETS 模板缓存，
-  // 即便 public/index.html 的版本未及时刷新，SSR 输出也始终携带 zoom CSS）
-  headInjections += '<style>@media (min-width: 769px){html{zoom:1.25}body{overflow-x:hidden}@supports not (zoom: 1.25){html{transform:scale(1.25);transform-origin:top left;width:80%}body{overflow-x:hidden}}}</style>';
+  // 首页整体放大到 125%
+  // - 通过 <link> 引用外部 css 文件，避免内联 <style> 被 Cloudflare 边缘节点误剥
+  // - ?v= 版本号手动管理，部署时按需更新
+  headInjections += '<link rel="stylesheet" href="/css/zoom.css?v=2">';
 
   // 自定义字体
   const usedFonts = new Set();
@@ -526,8 +527,6 @@ export async function onRequest(context) {
   }).replace(/</g, '\\u003c');
 
   // --- 一次性替换 </head> ---
-  // [DEBUG-BUILD-TAG-v44fcc8d] 仅用于诊断是否运行到最新 worker bundle
-  headInjections += '<meta name="x-build-tag" content="44fcc8d-zp">';
   html = html.replace('</head>', headInjections + '</head>');
 
   // 替换 body 标签 + 滚动容器

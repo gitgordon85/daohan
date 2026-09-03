@@ -443,10 +443,10 @@ export async function onRequest(context) {
   const mobileFrostedBlur = normalizeCssPixelValue(S.mobile_layout_frosted_glass_intensity, frostedBlur);
   headInjections += `<style>:root { --card-padding: 1.25rem; --card-radius: ${cardRadius}px; --frosted-glass-blur: ${frostedBlur}px; }@media (max-width: 767px) { :root { --card-radius: ${mobileCardRadius}px; --frosted-glass-blur: ${mobileFrostedBlur}px; } }</style>`;
 
-  // 首页整体放大到 125%
-  // - 通过 <link> 引用外部 css 文件，避免内联 <style> 被 Cloudflare 边缘节点误剥
-  // - ?v= 版本号手动管理，部署时按需更新
-  headInjections += '<link rel="stylesheet" href="/css/zoom.css?v=2">';
+  // 首页整体放大到 125% 的 CSS 已添加到 public/css/style.css 末尾。
+  // 之前尝试通过 headInjections 注入内联 <style> 或外部 <link> 都被
+  // Cloudflare 边缘节点的 HTML 处理逻辑剥除；style.css 已被现有的
+  // <link rel="stylesheet"> 引入并缓存，是最稳妥的注入点。
 
   // 自定义字体
   const usedFonts = new Set();

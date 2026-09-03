@@ -2019,3 +2019,30 @@ html:not(.dark) .dropdown-item.active {
     margin-bottom: 0;
   }
 }
+
+/* ==========================================================================
+   首页整体放大到 125%
+   - Chrome / Safari / Edge：使用标准 zoom 属性（不影响布局流，最稳定）。
+   - Firefox：不支持 zoom，使用 transform: scale + transform-origin 兜底。
+   - 仅在桌面端应用，避免移动端布局溢出。
+   - body 设 overflow-x: hidden，防止放大后出现横向滚动条/抖动。
+   - 此规则添加到 style.css 末尾，因为 Cloudflare 边缘节点会剥除通过
+     functions headInjections 注入的内联 <style> 与新加的 <link>。 */
+@media (min-width: 769px) {
+  html {
+    zoom: 1.25;
+  }
+  body {
+    overflow-x: hidden;
+  }
+  @supports not (zoom: 1.25) {
+    html {
+      transform: scale(1.25);
+      transform-origin: top left;
+      width: 80%;
+    }
+    body {
+      overflow-x: hidden;
+    }
+  }
+}

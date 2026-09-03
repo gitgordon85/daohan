@@ -527,6 +527,12 @@ export async function onRequest(context) {
   }).replace(/</g, '\\u003c');
 
   // --- 一次性替换 </head> ---
+  // 强制更新 /css/style.css 的版本号，绕过 _headers 里
+  // `Cache-Control: public, max-age=31536000, immutable` 的 1 年缓存，
+  // 强制 CF 边缘节点拉取包含 zoom CSS 的新版 style.css。
+  // 版本号每次代码变更时手动更新（与 commit SHA 对齐）。
+  const STYLE_CSS_VERSION = 'a3db50f-zoom';
+  html = html.replace('/css/style.css?v=f437bf07', '/css/style.css?v=' + STYLE_CSS_VERSION);
   html = html.replace('</head>', headInjections + '</head>');
 
   // 替换 body 标签 + 滚动容器

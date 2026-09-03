@@ -443,6 +443,19 @@ export async function onRequest(context) {
   const mobileFrostedBlur = normalizeCssPixelValue(S.mobile_layout_frosted_glass_intensity, frostedBlur);
   headInjections += `<style>:root { --card-padding: 1.25rem; --card-radius: ${cardRadius}px; --frosted-glass-blur: ${frostedBlur}px; }@media (max-width: 767px) { :root { --card-radius: ${mobileCardRadius}px; --frosted-glass-blur: ${mobileFrostedBlur}px; } }</style>`;
 
+  // 首页整体放大到 125%（通过 headInjections 注入，绕过 ASSETS 模板缓存，
+  // 即便 public/index.html 的版本未及时刷新，SSR 输出也始终携带 zoom CSS）
+  headInjections += `<style>
+    @media (min-width: 769px) {
+      html { zoom: 1.25; }
+      body { overflow-x: hidden; }
+      @supports not (zoom: 1.25) {
+        html { transform: scale(1.25); transform-origin: top left; width: 80%; }
+        body { overflow-x: hidden; }
+      }
+    }
+  </style>`;
+
   // 自定义字体
   const usedFonts = new Set();
   if (!S.layout_hide_title && S.home_title_font) usedFonts.add(S.home_title_font);
